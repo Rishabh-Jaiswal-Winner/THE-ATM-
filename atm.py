@@ -1,43 +1,144 @@
-print("Welcome To The ATM")
-balance = 1000
+print("=" * 50)
+print("🏧 ADVANCED ATM MANAGEMENT SYSTEM 🏧")
+print("=" * 50)
+
 users = {}
-current_user = None
 
 while True:
-    choice = input("1. Deposit\n2. Withdraw\n3. Register\n4. Exit\nChoose an Option: ") # Fixed \, to \n and prompt text
-    if choice == "1" and current_user != None:
-        deposit = input("Enter an Amount To Deposit: ")
-        if deposit.isnumeric():
-            deposit = int(deposit)
-            if deposit > 0:
-                balance += deposit
-                print(f"Your New Balance Is {balance}")
-            else:
-                print("Deposit amount must be positive.")
-        else:
-            print("Please Enter A Valid Amount")
-    elif choice == "2" and current_user != None: # Corrected this to be the withdraw option
-        withdraw = input("Enter Amount To Withdraw: ")
-        if withdraw.isnumeric():
-            withdraw = int(withdraw)
-            if balance >= withdraw and withdraw > 0:
-                balance -= withdraw
-                print(f"Your New Balance Is {balance}")
-            else:
-                print(f"Cannot Withdraw. Current balance: {balance}, requested: {withdraw}.")
-        else:
-            print("Please Enter A Valid Amount")
-    elif choice == "3":
-        mobile_number = input("Enter Your Mobile Number: ")
-        name = input("Enter Your name: ")
-        email = input("Enter Your email: ")
+    print("\nMAIN MENU")
+    print("1. Register")
+    print("2. Login")
+    print("3. Exit")
 
-        d1 = {"email": email, "mobile_number": mobile_number}
-        users[name] = d1
-        print(name,"Has Been Registered To The Banks Id")
-        current_user = users[name]
-    elif choice == "4": # Corrected this to be the exit option
-        print("Thank you for using the ATM!")
+    choice = input("Choose an option: ")
+
+    if choice == "1":
+        username = input("Enter Username: ")
+
+        if username in users:
+            print("❌ User already exists!")
+            continue
+
+        mobile = input("Enter Mobile Number: ")
+        email = input("Enter Email: ")
+        pin = input("Create 4 Digit PIN: ")
+
+        users[username] = {
+            "mobile": mobile,
+            "email": email,
+            "pin": pin,
+            "balance": 1000,
+            "history": []
+        }
+
+        print("✅ Registration Successful!")
+
+    elif choice == "2":
+        username = input("Username: ")
+        pin = input("PIN: ")
+
+        if username not in users:
+            print("❌ User Not Found!")
+            continue
+
+        if users[username]["pin"] != pin:
+            print("❌ Incorrect PIN!")
+            continue
+
+        print(f"\n✅ Welcome {username}")
+
+        while True:
+            print("\n" + "=" * 40)
+            print("ATM MENU")
+            print("=" * 40)
+            print("1. Check Balance")
+            print("2. Deposit Money")
+            print("3. Withdraw Money")
+            print("4. Transaction History")
+            print("5. Account Details")
+            print("6. Logout")
+
+            atm_choice = input("Select Option: ")
+
+            if atm_choice == "1":
+                print(f"💰 Current Balance: ${users[username]['balance']}")
+
+            elif atm_choice == "2":
+                amount = input("Enter Amount To Deposit: ")
+
+                if amount.isdigit():
+                    amount = int(amount)
+
+                    if amount > 0:
+                        users[username]["balance"] += amount
+                        users[username]["history"].append(
+                            f"Deposited ${amount}"
+                        )
+
+                        print("✅ Deposit Successful")
+                        print(
+                            f"New Balance: ${users[username]['balance']}"
+                        )
+                    else:
+                        print("❌ Amount must be greater than 0")
+
+                else:
+                    print("❌ Invalid Amount")
+
+            elif atm_choice == "3":
+                amount = input("Enter Amount To Withdraw: ")
+
+                if amount.isdigit():
+                    amount = int(amount)
+
+                    if amount <= 0:
+                        print("❌ Amount must be greater than 0")
+
+                    elif amount > users[username]["balance"]:
+                        print("❌ Insufficient Balance")
+
+                    else:
+                        users[username]["balance"] -= amount
+
+                        users[username]["history"].append(
+                            f"Withdrawn ${amount}"
+                        )
+
+                        print("✅ Withdrawal Successful")
+                        print(
+                            f"Remaining Balance: ${users[username]['balance']}"
+                        )
+
+                else:
+                    print("❌ Invalid Amount")
+
+            elif atm_choice == "4":
+                print("\n📜 TRANSACTION HISTORY")
+
+                if len(users[username]["history"]) == 0:
+                    print("No Transactions Found")
+
+                else:
+                    for transaction in users[username]["history"]:
+                        print("•", transaction)
+
+            elif atm_choice == "5":
+                print("\n👤 ACCOUNT DETAILS")
+                print("Username :", username)
+                print("Email    :", users[username]["email"])
+                print("Mobile   :", users[username]["mobile"])
+                print("Balance  :", users[username]["balance"])
+
+            elif atm_choice == "6":
+                print("👋 Logged Out Successfully")
+                break
+
+            else:
+                print("❌ Invalid Choice")
+
+    elif choice == "3":
+        print("🙏 Thank You For Using Our ATM")
         break
+
     else:
-        print("Invalid option. Please choose 1, 2, 3 or 4.")
+        print("❌ Invalid Choice")
